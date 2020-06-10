@@ -180,7 +180,7 @@ You should hide data from yourself to protect the code from being affected by un
 
 _Don't_
 
-```
+```ruby
 class Gear
   def initialize(chainring, cog)
     @chainring = chainring
@@ -194,7 +194,7 @@ end
 ```
 
 _Do_
-```
+```ruby
 class Gear
   
   def initialize(chainring, cog)
@@ -226,7 +226,7 @@ This style of code allows you to protect against changes in externally owned dat
 
 _Don't_
 
-```
+```ruby
 class ObscuringReferences
   attr_reader :data
   
@@ -242,7 +242,7 @@ end
 ```
 
 _Do_
-```
+```ruby
 class RevealingReferences
   attr_reader :wheels
   
@@ -272,7 +272,7 @@ _Don't_
 
 This method has two responsibilities: iterating and calculating the diameter
 
-```
+```ruby
 def diameters
   wheels.collect{|wheel| wheel.rim + (wheel.tire * 2)}
 end
@@ -280,7 +280,7 @@ end
 
 _Do_
 
-```
+```ruby
 def diameters
   wheels.collect{|wheel| diameter(wheel)}
 end
