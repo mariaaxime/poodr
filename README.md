@@ -14,11 +14,13 @@ Applications are constantly changing. They need to be flexible and adaptable.
 
 Object-oriented applications are made of objects that pass messages between them. These interactions create dependencies. 
 
+
 Object-oriented design is about _managing dependencies_. When objects know too much about each other, changing one of them requires changing all of them.
 
 #### 1.1.3. A Practical Definition of Design
 
 Every problem has two components. Writing code for the feature you're building and writing code that's amenable to be changed later.
+
 
 When designing for the future you shouldn't do it thinking about specific requirements. The purpose of design is to allow you to do design later, and its primary goal is to reduce the cost of change.
 
@@ -38,6 +40,7 @@ When designing for the future you shouldn't do it thinking about specific requir
 
 Patterns: Simple and elegant solutions to specific problems in object-oriented software design that you can use to make your own designs more flexible, modular, reusable and understandable.
 
+
 Applying patterns to the wrong problem is not fault of the pattern itself.
 
 > A tool cannot be faulted for its use; the user must master
@@ -53,7 +56,9 @@ The first way design fails is due to lack of it.
 
 _Undesigned_ applications carry the seeds of their own destruction; they are easy to write but gradually become impossible to change.
 
+
 More experienced programmers are aware of OOD techniques but do not yet understand how to apply them. They fall into the trap of _overdesign_: applying principles inappropriately and seeing patterns when none exist.
+
 
 Object-oriented software fails when the act of design is separated from the act of programming. Design relies on a feedback loop that should be timely and incremental (iterative techniques). When design is dictated from afar, none of the necessary adjustments can occur and early failures of understanding get cemented into the code.
 
@@ -65,8 +70,7 @@ Big Up Front Design (BUFD) leads to an adversarial relationship between customer
 
 #### 1.3.3. Judging Design
 
-There are numerous Ruby gems that asses how well your code follows OOD principles. Metrics software works by scanning source code and counting things that predict quality. Running a metrics suite against your own code can be illuminating, humbling, and sometimes alarming. Seemingly well-designed applications can rack up impres-
-sive numbers of OOD violations.
+There are numerous Ruby gems that asses how well your code follows OOD principles. Metrics software works by scanning source code and counting things that predict quality. Running a metrics suite against your own code can be illuminating, humbling, and sometimes alarming. Seemingly well-designed applications can rack up impressive numbers of OOD violations.
 
 > OOD metrics cannot identify designs that do the wrong thing in the right way.
 
@@ -80,11 +84,13 @@ The ultimate software metric would be _cost per feature over the time interval t
 
 Variables: names with associated data. The data type is known and you know what to do with it (append to strings, do math with numbers, index into arrays, etc).
 
+
 In this language, data is one thing and behavior is something completely different. Data gets packaged up into variables and then passed around to behavior, which could, frankly, do anything to it.
 
 #### 1.4.2. Object-Oriented Languages
 
 Instead of dividing data and behavior, they are a single thing: an object. Objects have behavior and may contan data, data to whick they alone control access. Objects invoke one another's behavior by sending each other messages.
+
 
 OO languages don't limit you to a small set of built-in types and pre-defined operations; you can invent brand new types of your own.
 
@@ -138,6 +144,7 @@ A class consists of eveything it directly implements plus everything it inherits
 
 A class that has more than one responsibility is difficult to reuse. The responsibilities are entangled within the class. If you want to reuse some of its behavior, it's impossible to get just the parts you need.
 
+
 You could duplicate the code you need, but **that's a terrible idea**. It leads to additional maintenance and increases bugs.
 
 > You increase your application's chance of breaking unexpectedly if you depend on classes that do too much.
@@ -145,7 +152,6 @@ You could duplicate the code you need, but **that's a terrible idea**. It leads 
 #### 2.2.3. Determining if a Class has a Single Responsibility
 
 - Interrogate the class. If you rephrase every one of its methods as a question, asking the question ought to make sense
-
 - Attempt to describe what the class does in a sentence. If the simplest description you can devise uses the word 'and', the class likely has more than one responsibility. If it uses the word 'or', the class has more than one responsibility and they're not even related
 
 When everything in a class is related to its main purpose, the class is _highly cohesive_.
@@ -162,6 +168,7 @@ Single Responsibility Principe doesn't mean that the class does one very narrow 
 
 Other developers believe that your intentions are reflected in the code; when the code lies, you must be alert to programmers believing and then propagating that lie.
 
+
 A good designer understands the tension between 'improve it now' vs 'improve it later' and minimizes costs by making informed tradeoffs between the needs of the present and the possibilities of the future.
 
 ### 2.3. Writing Code that Embraces Change
@@ -175,6 +182,7 @@ Don't Repeat Yourself (DRY) code tolerates change because any change in behavior
 ##### Hide Instance Variables
 
 Always wrap instance variables in accessor methods instead of directly referring to variables. Implementing this method (`attr_reader`) changes the variable from data (which is referenced all over) to behavior (which is defined once). You could make the `attr_reader` private.
+
 
 You should hide data from yourself to protect the code from being affected by unexpected changes. 
 
@@ -214,12 +222,8 @@ end
 ##### Hide Data Structures
 
 Avoid code that depends upon the data structure. If that structure changes, then the code must change.
-
 Direct references into complicated structures are confusing, because they obscure what the data really is, and they are a maintenance nightmare, because every reference will need to be changed when the structure of the data changes.
-
-You can use a `Struct` to separate structure from meaning.
-
-This style of code allows you to protect against changes in externally owned data structures and to make your code more readable and intention revealing.
+You can use a `Struct` to separate structure from meaning. This style of code allows you to protect against changes in externally owned data structures and to make your code more readable and intention revealing.
 
 > Although it might be easier to just have an array of Wheels to begin with, it is not always possible. If you can control the input, pass in a useful object, but if you are compelled to take a messy structure, hide the mess even from yourself.
 
@@ -306,6 +310,7 @@ You can create a new class or you can create a Struct inside of the current clas
 
 If you have a muddled class with too many responsibilities, separate those into different classes.
 
+
 If you identify extra responsibilities that you can't yet remove, isolate them.
 
 #### 2.4. Finally, the Real Wheel
@@ -330,6 +335,7 @@ Well-designed objects have a single responsibility, so their nature is to collab
 ### 3.1. Understanding Dependencies
 
 An object depends on another object if, when one object changes, the other might be forced to change in turn.
+
 
 Take a look at this code:
 
@@ -388,6 +394,7 @@ There's some degree of dependency between those two classes as they need to coll
 
 These dependencies _couple_ `Gear` to `Wheel`. 
 
+
 The more tightly coupled two objects are, the more they behave like a single entity. When two or more objects are so tightly coupled that they behave as a unit, it's impossible to reuse just one. Changes to one object force changes to all.
 
 #### 3.1.3. Other Dependencies
@@ -402,6 +409,7 @@ The more tightly coupled two objects are, the more they behave like a single ent
 #### 3.2.1. Inject Dependencies
 
 Referring to another class by its name creates a dependency.
+
 
 When `Gear` hard-codes a reference to `Wheel` inside its `gear_inches` method, it is explicitly declaring that it is only willing to calculate gear inches for instances of `Wheel`. `Gear` refuses to collaborate with any other kind of object, even if that object has a diameter and uses gears.
 
@@ -430,6 +438,7 @@ puts Gear.new(52, 11, Wheel.new(26, 1.5)).gear_inches # => 137.0909090909091
 ```
 
 `Gear` doesn't know or care that the object might be an instance of class `Wheel`. It only know that it holds an object that responds to `diameter`.
+
 
 This technique is known as _dependency injection_. Using dependency injection to shape code relies on your ability to recognize that the responsibility for knowing the name of a class and the responsibility for knowing the name of a message to send to that class may belong in different objects.
 
@@ -494,6 +503,7 @@ They reveal dependencies instead of concealing them, lowering the barriers to re
 
 External messages: Messages that are sent to someone other than `self`.
 
+
 The `gear_inches` method send `ratio` and `wheel` to `self` but sends `diameter` to wheel.
 
 ```ruby
@@ -519,6 +529,7 @@ end
 #### 3.2.3. Remove Argument-Order Dependencies
 
 Many method signatures not only require arguments, but they also require that those arguments be passed in a specific, fixed order.
+
 
 When a new instance of `Gear` is created, the three arguments must be passed and they must be passed in the correct order.
  
@@ -581,6 +592,7 @@ It's best to embed simple defaults right in the parameter list, but if getting t
 
 Sometimes you don't control the signature of the method that needs to change. You will be forced to depend on a method that requires positional arguments.
  
+ 
 Imagine that `Gear` is part of a framework and that its initialization method requires positional arguments. Imagine also that your code has many places where you must create a new instance of `Gear`. Just as you would DRY out repetitive code inside of a class, DRY out the creation of new `Gear` instances by creating a single method to wrap the external interface.
 
 ```ruby
@@ -608,6 +620,7 @@ end
 
 `GearWrapper` is a Ruby module instead of a class. Using a module here lets you define a separate and distinct object to which you can send the `gear` message while simultaneously conveying the idea that you don't expect to have instances of `GearWrapper`. 
 
+
 _Factories_: Objects whose only purpose is to create instance of some other class.
 
 ### 3.3. Managing Dependency Direction
@@ -630,7 +643,9 @@ In our code, `Gear` depends on `Wheel`, but we could've written the code so that
 
 Ruby base classes (`String`, `Array`, ...) always change less often than your own classes, and you can  continue to depend on them without another thought.
 
+
 You need to assess how mature are the frameworks you use. In general, any framework you use will be more stable than your code, but you could choose a framework whose code changes more often than yours.
+
 
 Rank evey class used in your application along a scale of how likely it is to undergo a change relative to all other classes. This ranking is one key piece of information to consider when choosing the direction of dependencies.
 
@@ -638,6 +653,7 @@ Rank evey class used in your application along a scale of how likely it is to un
 
 Concretion: Creating a `Wheel` from the `rim` and `tire` parameters
 Abstraction: Passing a `wheel` argument that is a _Duck_ that responds to `diameter`
+
 
 When you inject `Wheel` into `Gear` such that Gear then depends on a Duck who responds to `diameter`, you are, however casually, defining an interface. This interface is an abstraction of the idea that a certain category of things will have a diameter. 
 
@@ -648,6 +664,7 @@ When you inject `Wheel` into `Gear` such that Gear then depends on a Duck who re
 **Finding the Dependencies That Matter**
 
 Classes vary in their likelihood of change, their level of abstraction, and their number of dependents. 
+
 
 Each quality matters, but the interesting design decisions occur at the place where likelihood of change intersects with number of dependents.
 
@@ -665,3 +682,408 @@ Zone D classes are the ones that make an application painful to change. You can 
 - Depending on abstractions decreases the likelihood of facing these changes
 
 > Depend on things that change less often than you do.
+
+## 4. Creating Flexible Interfaces
+
+> An object-oriented application is made up of classes but defined by messages.
+
+Design deals with:
+
+* What objects know -> Their responsibilities
+* Who they know -> Their dependencies
+* How they talk to one another
+
+### 4.1. Understanding Interfaces
+
+You can build two types of applications: 
+
+**Every object may send any message to any other object**
+
+The objects expose too much about themselves and know too much about others. To reuse any you need all, to change one thing you must change everything.
+
+
+The roots of this problem lie not in what each class does but in what it reveals.
+
+**The objects communicate in specific and well-defined ways**
+
+The objects are pluggable. They reveal as little about themselves, and know as little about others, as possible.
+
+
+This application has some agreement about which messages may pass between its objects. Each object has a clearly defined set of methods that it expects other to use.
+
+_Public interface_: Made up of the methods of a class that are intended to be used by others.
+
+### 4.2. Defining Interfaces
+
+A class exists to fulfill a single responsibility but implements many methods. These methods vary in scale and granularity and range from broad, general methods that expose the main responsibility of the class to tiny utility methods that are only meant to be used internally. Some of them should be public; others deal with internal implementation details and are private.
+
+#### 4.2.1. Public Interfaces
+
+The methods that make up the public interface:
+
+* Reveal its primary responsibility
+* Are expected to be invoked by others
+* Will not change on a whim
+* Are safe for others to depend on
+* Are thoroughly documented in the tests
+
+#### 4.2.2. Private Interfaces
+
+All other methods in the class. They:
+
+* Handle implementation details
+* Are not expected to be sent by other objects
+* Can change for any reason
+* Are unsafe for others to depend on
+* May not even be referenced in the tests
+
+#### 4.2.3. Responsibilities, Dependencies and Interfaces
+
+There is a correspondence between the statements you make about the specific responsibilities of a class and the class' public methods. Public methods should read like a description of responsibilities. 
+ 
+> The public interface is a contract that articulates the responsibilities of your class.
+
+The public methods are stable and the private methods are changeable. When you mark methods as public or private, you tell users of your class upon which methods they may safely depend.
+
+### 4.3. Finding the Public Interface
+
+#### 4.3.1. An Example Application: Bicycle Touring Company
+
+_Use case_: A customer, in order to choose a trip, would like to see a list of available trips of appropriate difficulty, on a specific date, where rental bicycles are available.
+
+#### 4.3.2. Constructing an Intention
+
+_Domain objects_: Nouns in the application that have both data and behavior.
+
+
+Domain objects are easy to find, but they are not at the design center of your application. Design experts notice domain objects without concentrating on them; they focus not on these objects but on the messages that pass between them.
+
+#### 4.3.3. Using Sequence Diagrams
+
+Sequence diagrams provide a simple way to experiment with different object arrangements and message-passing schemes.
+They specify the messages that pass between objects, and because objects should communicate using public interfaces, sequence diagrams are a vehicle for exposing, experimenting with, and ultimately defining those interfaces.
+Instead of deciding on a class and then figuring out its responsibilities, you are now deciding on a message and figuring out where to send it.
+
+> You don't send messages because you have objects, you have objects because you send messages.
+
+#### 4.3.4. Asking for 'What' Instead of Telling 'How'
+
+A class that is sending a message to another class should not have to worry about the implementation details.
+Having a small public interface means that there are few methods for others to depend on.
+
+#### 4.3.5. Seeking Context Independence
+
+A class has a single responsibility but it expects a context.
+
+
+The context that an object expects has a direct effect on how difficult it is to reuse. An object that could collaborate with others without knowing who they are or what they do could be reused in novel and unanticipated ways.
+
+#### 4.3.6. Trusting Other Objects
+
+> I know what I want, and I trust you to do your part.
+
+This blind trust is a keystone of object-oriented design. It allows objects to col- laborate without binding themselves to context and is necessary in any application that expects to grow and change.
+
+#### 4.3.7. Using Messages to Discover Objects
+
+Sometimes you know the message a class should send (e.g. `suitable_trips` is what the Customer wants). The problem is not with the sender, it is with the receiver. You have not yet identified an object whose responsibility is to implement this method.
+
+#### 4.3.8. Creating a Message-Based Application
+
+Switching your attention from objects to messages allows you to concentrate on designing an application built upon public interfaces.
+
+### 4.4. Writing Code That Puts Its Best (Inter)Face Forward
+
+> It is more important that a well-defined interface exists than that it be perfect.
+
+Think about interfaces. Create them intentionally. It's your interfaces that define your application and determine its future.
+
+#### 4.4.1. Create Explicit Interfaces
+
+Every time you create a class, declare its interfaces. Methods in the public interface should:
+
+* Be explicitly identified as such
+* Be more about what than how
+* Have names that, insofar as you can anticipate, will not change
+* Prefer keyword arguments
+
+
+- **Private methods**: Least stable kind of methods. Must be called with an implicit receiver.
+- **Protected methods**: Unstable methods. Allow explicit receivers as long as the receiver is `self` or an instance of the same class or subclass of `self`.
+- **Public methods**: Stable methods. Are visible everywhere.
+
+#### 4.4.2. Honor the Public Interfaces of Others
+
+Do your best to interact with other classes using only their public interfaces.
+
+> If your design forces the use of a private method in another class, first rethink your design.
+
+#### 4.4.3. Exercise Caution When Depending on Private Interfaces
+
+If you cannot avoid using a private method, you can prevent the method from being referenced in many places by isolating the dependency.
+
+#### 4.4.4. Minimize Context
+
+Keep the _what_ vs _how_ discussion in mind; create public methods that allow senders to get what they want without knowing how your class implements its behavior.
+
+### 4.5. The Law of Demeter
+
+#### 4.5.1. Defining Demeter
+
+Demeter restricts the set of objects to which a method may _send_ messages; it prohibits routing a message to a third object via a second object of a different type.
+
+> Only talk to your immediate neighbors
+
+#### 4.5.2. Consequences of Violations
+
+The risk incurred by Demeter violations is low for stable attributes, high for behavior. It could be permitted as long as you're not changing the value of the attribute you retrieve. Certain violations of Demeter reduce your application's flexibility and maintainability, while other make perfect sense.
+
+#### 4.5.3. Avoiding Violations
+
+ You could _delegate_ a message to avoid the dots. However, using delegation to hide tight coupling is not the same as decoupling the code.
+ 
+ #### 4.5.4. Listening to Demeter
+ 
+ Message chains like `customer.bicycle.wheel.rotate` occur when your design thoughts are unduly influenced by objects you already know. The code know not only what it wants but how to navigate through a bunch of intermediate objects to reach the desired behavior.
+  
+> The train wrecks of Demeter violations are clues that there are objects whose public interfaces are lacking.
+
+### 4.6. Summary
+
+Object-oriented applications are defined by the messages that pass between objects. This message passing takes place along _public_ interfaces.
+
+
+When messages are trusting and ask for what the sender wants instead of telling the receiver how to behave, objects naturally evolve public interfaces that are flexible and reusable in novel and unexpected ways.
+
+## 5. Reducing Costs with Duck Typing
+
+_Duck typing_: Technique that combines messages + public interfaces.
+
+
+_Duck types_: Interfaces that are not tied to any specific class.
+
+> If an object quacks like a duck and walks like a duck, then its class is immaterial - it's a duck
+
+### 5.1. Understanding Duck Typing
+
+It is knowledge of the category of the contents of a variable (its _type_) that allows an application to have an expectation about how those contents will behave.
+
+> Users of an object need not, and should not, be concerned about its class. [...] It's not what an object is that matters, it's what it does.
+
+#### 5.1.1. Overlooking the Duck
+
+`Trip`’s prepare method sends message `prepare_bicycles` to the object contained in its `mechanic` parameter.
+
+```ruby
+class Trip
+  def prepare(mechanic)
+    mechanic.prepare_bicycles(bicycles)
+  end
+end
+```
+
+The `Mechanic` class is not referenced. The object `mechanic` could be of any class.
+
+#### 5.1.2. Compounding the Problem
+
+Imagine that requirements change. In addition to mechanic, trip preparation now involves a trip coordinator and a driver.
+
+```ruby
+class Trip
+  def prepare(preparers)
+    preparers.each do |preparer|
+      case preparer
+      when Mechanic
+        preparer.prepare_bicycles(bicycles)
+      when TripCoordinator
+        preparer.buy_food(customers)
+      when Driver
+        preparer.gas_up(vehicle)
+        preparer.fill_water_tank(vehicle)
+      end
+    end
+  end
+end
+```
+
+> Code like this gets written when programmers are blinded by existing classes and neglect to notice that they have overlooked important messages; this dependent-laden code is a natural outgrowth of a class-based perspective.
+
+New dependencies on the `prepare` method:
+
+- Relies on specific classes
+- Relies on the explicit name of those classes
+- Knows the name of the messages that each class understands
+- Knows the arguments that those messages require
+
+This style of code propagates itself. When a new trip preparer appears, a programmer will add a new `when` branch to the `case` statement.
+The logical endpoint of this programming style is a stiff and inflexible application, where it eventually becomes easier to rewrite everything than to change anything.
+
+> Sequence diagrams should always be simpler than the code they represent; when they're not, something is wrong with the design.
+
+#### 5.1.3. Finding the Duck
+
+The `prepare` method wants to prepare the trip. Its arguments arrive ready to collaborate in trip preparation. 
+
+
+Remove the expectation about the class of its arguments, and expect each to be a `Preparer`. Ask what message the `prepare` method can send each `Preparer`.
+
+
+`Trip`'s prepare method now expects its arguments to be `Preparer`s that can respond to `prepare_trip`.
+
+```ruby
+class Trip
+  def prepare(preparers)
+    preparers.each do |preparer|
+      preparer.prepare_trip(self)
+    end
+  end
+end
+```
+
+#### 5.1.4. Consequences of Duck Typing
+
+Concrete code is easy to understand but costly to extend. Abstract code my initially seem more obscure but, once understood, is far easier to change. 
+Use of a duck type makes your code easier to extend but casts a veil over the underlying class of the duck.
+
+> Once you begin to treat your objects as if they are defined by their behavior rather than by their class, you enter into a new realm of expressive flexible design.
+
+**Polymorphism**
+
+The ability of many different objects to respond to the same message. Senders of the message need not care about the class of the receiver; receivers supply their own specific version of the behavior.
+
+### 5.2. Writing Code That Relies on Ducks
+
+It's relatively easy to implement a duck type; your design challenge is to notice that you need on and to abstract its interface.
+
+#### 5.2.1. Recognizing Hidden Ducks
+
+**Case Statements that Switch on Class**
+
+```ruby
+class Trip
+  def prepare(preparers)
+    preparers.each do |preparer|
+      case preparer
+      when Mechanic
+        preparer.prepare_bicycles(bicycles)
+      when TripCoordinator
+        preparer.buy_food(customers)
+      when Driver
+        preparer.gas_up(vehicle)
+        preparer.fill_water_tank(vehicle)
+      end
+    end
+  end
+end
+```
+
+When you see this pattern, you know that all of the `preparer`s must share something in common. 
+Ask yourself, _'What is it that `prepare` wants from each of its arguments?'_. The answer to that question suggests the message you should send; this message begins to define the underlying duck type.
+
+**`kind_of?` and `is_a?`**
+
+```ruby
+class Trip
+  def prepare(preparers)
+    preparers.each do |preparer|
+      if preparer.kind_of?(Mechanic)
+        preparer.prepare_bicycles(bicycles)
+      elsif preparer.kind_of?(TripCoordinator)
+        preparer.buy_food(customers)
+      elsif preparer.kind_of?(Driver)
+        preparer.gas_up(vehicle)
+        preparer.fill_water_tank(vehicle)
+      end
+    end
+  end
+end
+```
+
+This is the same thing as the previous example and it should be corrected using the same techniques.
+
+**`responds_to?`**
+
+```ruby
+class Trip
+  def prepare(preparers)
+    preparers.each do |preparer|
+      if preparer.responds_to?(:prepare_bicycles)
+        preparer.prepare_bicycles(bicycles)
+      elsif preparer.responds_to?(:buy_food)
+        preparer.buy_food(customers)
+      elsif preparer.responds_to?(:gas_up)
+        preparer.gas_up(vehicle)
+        preparer.fill_water_tank(vehicle)
+      end
+    end
+  end
+end
+```
+
+This code doesn't depend on the class names, but it depends on their behavior.
+
+#### 5.2.2. Placing Trust in your Ducks
+
+Each of the previous examples indicate the presence of an unidentified duck (_I know who you are, and because of that, I know what you do_). This is an indication that you're missing an object, one whose public interface you haven't discovered (doesn't matter if it's a duck type or not). 
+
+
+When you see these patterns, concentrate on the offending code's expectations and use those expectations to find the duck type.
+
+- Define its interface
+- Implement that interface where necessary
+- Trust those implementers to behave correctly
+
+#### 5.2.3. Documenting Duck Types
+
+> The simplest kind of duck type is one that exists merely as an agreement about its public interface.
+
+The duck types are abstract; they are strong as a design tool but weak in the code. When you create duck types, you must both document and test their public interfaces.
+
+#### 5.2.4. Sharing Code between Ducks
+
+#### 5.2.5. Choosing your Ducks Wisely
+
+ It is _ok_ to rely on Ruby base classes (`Array`, `String`, `NilClass`). Rails does it, because the chances of those classes changing is way too small. 
+  
+_Monkey patching_: Making changes to base classes. If you need to monkey patch one of Ruby's base classes, you're probably making the wrong design decision.
+
+### 5.3. Conquering a Fear of Duck Typing
+
+#### 5.3.1. Subverting Duck Types with Static Typing
+
+- Statically typed languages require that you explicitly declare the type of each variable and every method parameter
+- Dynamically typed languages allow you to put any value in any variable and pass any argument to any method
+
+Programmers who fear dynamic typing tend to check the classes of their objects ➡ methods fail when new classes appear ➡ programmers think more checking is needed ➡ the code becomes less flexible and more dependent on class.
+
+
+Duck typing removes the dependencies on class and thus avoid the subsequent type failures.
+
+#### 5.3.2. Static vs Dynamic Typing
+
+**Static Typing**
+
+- The compiler unearths type errors at compile time
+- Visible type information serves as documentation
+- Complied code is optimized to run quickly
+
+**Dynamic Typing**
+
+- Code is interpreted and can be dynamically loaded; there is no compile/make cycle
+- Source code does not include explicit type information
+- Metaprogramming is easier 
+
+#### 5.3.3. Embracing Dynamic Typing
+
+For certain applications, well-optimized statically typed code will outperform a dynamically typed implementation.
+
+The value of type declarations as documentation is more subjective: declarations could be distracting for someone that's used to dynamic typing. Once accustomed to it, you'll find this less verbose syntax easy to read, write and understand.
+
+Metaprogramming: Writing code that writes code. Metaprogramming is a scalpel; though dangerous in the wrong hands, it’s a tool no good programmer should willingly be without.
+
+> The fact that some people cannot be trusted with knives does not mean sharp instruments should be taken from the hands of all.
+
+### 5.4. Summary
+
+Duck types detach the public interfaces from specific classes, creating types that are defined by _what they do_ instead of by _who they are_.
+Depending on this abstract classes reduces risk and increases flexibility, making your application cheaper to maintain and easier to change.
