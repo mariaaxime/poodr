@@ -134,9 +134,9 @@ To achieve that the code should have the following qualities:
 
 A class should do the smallest possible useful thing.
 
-#### 2.2.1. An Example Application: Bycicles and Gears
+#### 2.2.1. An Example Application: Bicycles and Gears
 
-A class consists of eveything it directly implements plus everything it inherits.
+A class consists of everything it directly implements plus everything it inherits.
 
 #### 2.2.2. Why Single Responsibility Matters
 
@@ -942,7 +942,7 @@ end
 
 #### 5.1.4. Consequences of Duck Typing
 
-Concrete code is easy to understand but costly to extend. Abstract code my initially seem more obscure but, once understood, is far easier to change. 
+Concrete code is easy to understand but costly to extend. Abstract code may initially seem more obscure but, once understood, is far easier to change. 
 Use of a duck type makes your code easier to extend but casts a veil over the underlying class of the duck.
 
 > Once you begin to treat your objects as if they are defined by their behavior rather than by their class, you enter into a new realm of expressive flexible design.
@@ -1087,3 +1087,436 @@ Metaprogramming: Writing code that writes code. Metaprogramming is a scalpel; th
 
 Duck types detach the public interfaces from specific classes, creating types that are defined by _what they do_ instead of by _who they are_.
 Depending on this abstract classes reduces risk and increases flexibility, making your application cheaper to maintain and easier to change.
+
+## 6. Acquiring Behavior through Inheritance
+
+### 6.1. Understanding Classical Inheritance
+
+Inheritance is a mechanism for automatic message delegation. It creates relationships such that, if one object can't respond to a received message, it delegates that message to another.
+
+### 6.2. Recognizing Where to Use Inheritance
+
+#### 6.2.1. Starting with a Concrete Class
+
+This is the `Bicycle` class that represents a road bike.
+
+```ruby
+class Bicycle
+  attr_reader :size, :tape_color
+
+  def initialize(**opts)
+    @size = opts[:size]
+    @tape_color = opts[:tape_color]
+  end
+
+  # every bike has the same defaults for
+  # tire and chain size
+  def spares
+    {chain: '11-speed',
+     tire_size: '23',
+     tape_color: tape_color}
+  end
+  # Many other methods...
+end
+
+bike = Bicycle.new(size: 'M',
+                   tape_color: 'red')
+```
+
+#### 6.2.2. Embedding Multiple Types
+
+What happens when you need the `Bicycle` class to represent mountain bikes as well?
+
+```ruby
+class Bicycle
+  attr_reader :style, :size, :tape_color, :front_shock, :rear_shock
+
+  def initialize(**opts)
+    @style = opts[:style]
+    @size = opts[:size]
+    @tape_color = opts[:tape_color]
+    @front_shock = opts[:front_shock]
+    @rear_shock = opts[:rear_shock]
+  end
+
+  # checking 'style' starts down a slippery slope
+  def spares
+    if style == :road
+      {chain: '11-speed',
+       tire_size: '23', # millimeters
+       tape_color: tape_color}
+    else
+      {chain: '11-speed',
+       tire_size: '2.1', # inches
+       front_shock: front_shock}
+    end
+  end
+  # ...
+end
+
+bike = Bicycle.new(style: :mountain,
+                   size: 'S', front_shock: 'Manitou', rear_shock: 'Fox')
+puts bike.spares
+# => {:chain=>"11-speed", :tire_size=>"2.1", :front_shock=>"Manitou"}
+
+bike = Bicycle.new(style: :road,
+                   size: 'M', tape_color: 'red')
+puts bike.spares
+# => {:chain=>"11-speed", :tire_size=>"23", :tape_color=>"red"}
+```
+
+This code contains an `if` statement that checks an attribute that holds the category of self to determine what message to send to self. This is the same pattern as checking for an object's class to know which message to send to it. 
+
+#### 6.2.3. Finding the Embedded Types
+
+Variables named _style_, _type_, _category_ are your cue to notice the underlying pattern.
+
+The `style` variable divides instances of `Bicycle` into two different kinds of things. Some of `Bicycle`'s behavior applies to all bicycle, some only to road bikes and some only to mountain bikes.
+
+> This is the exact problem that inheritance solves: that of highly related types that share common behavior but differ along some dimension
+
+#### 6.2.4. Choosing Inheritance
+
+> Inheritance provides a way to define two objects as having a relationship such that when the first receives a message that it does not understand, it automatically forwards, or delegates, the message to the second.
+
+#### 6.2.5. Drawing Inheritance Relationships
+
+You can use class diagrams to illustrate class relationships. 
+
+- Boxes represent classes
+- Lines indicate classes are related
+- Hollow triangle means the relationship is inheritance
+- The triangle points to the superclass
+
+### 6.3. Misapplying Inheritance
+
+`Bicycle` class is a concrete class that was not written to be subclassed. In order to extract its behavior, we'd need to extract both `MountainBike` and `RoadBike` behavior. If we only extracted `MountainBike`, it would inherit the logic from `Bicycle` that's related to road bikes. 
+
+### 6.4. Finding the Abstraction
+
+Subclasses are specializations of their superclasses.
+
+For inheritance to work:
+
+- The objects that you're modeling  must truly have a generalization-specialization relationship
+- You must use the correct coding techniques
+
+#### 6.4.1. Creating an Abstract Superclass
+
+Being `Bicycle` the superclass of `MountainBike` and `RoadBike`, it will contain the common behavior and `MountainBike` and `RoadBike` will add specializations.
+
+
+`Bicycle` now represents an abstract class, meaning it's disassociated from any specific instance.
+
+> Abstract classes exist to be subclassed. This is their sole purpose. They provide a common repository for behavior that is shared across a set of subclasses—subclasses that in turn supply specializations.
+
+Don't do early abstractions, it's ok for a class to have general and specific behavior in the beginning. 
+
+#### 6.4.2. Promoting Abstract Behavior
+
+We need to make `MountainBike` and `RoadBike` respond to `size`.
+
+```ruby
+class Bicycle
+  attr_reader :size
+
+  def initialize(**opts)
+    @size = opts[:size]
+  end
+  # ...
+end
+
+class RoadBike < Bicycle
+  attr_reader :tape_color
+
+  def initialize(**opts)
+    @tape_color = opts[:tape_color]
+    super
+  end
+  # ...
+end
+
+class MountainBike < Bicycle
+  attr_reader :front_shock, :rear_shock
+
+  def initialize(**opts)
+    @front_shock = opts[:front_shock]
+    @rear_shock = opts[:rear_shock]
+    super
+  end
+  # ...
+end
+
+road_bike = RoadBike.new(size: 'M',
+                         tape_color: 'red')
+
+mountain_bike = MountainBike.new(size: 'S',
+                                 front_shock: 'Manitou',
+                                 rear_shock: 'Fox')
+
+puts road_bike.size
+# => M
+
+puts mountain_bike.size 
+# => S
+```
+
+To refactor this code:
+
+- Demote code to one of the subclasses ➡️ copy all the code from `Bicycle` to `RoadBike`
+- Start promoting to the super class code that's shared between the subclasses ➡️ start moving the code from `RoadBike` to `Bicycle` to make `MountainBike` respond to shared behavior, like _size_
+
+#### 6.4.3. Separating Abstract from Concrete
+
+`RoadBike` and `MountainBike` both implement a version of `spares`.
+
+Having this requirements:
+
+- Bicycles have a chain and a tire size.
+- All bicycles share the same default for chain.
+- Subclasses provide their own default for tire size.
+- Concrete instances of subclasses are permitted to ignore defaults and supply instance-specific values.
+
+We can extract `chain` and `tire_size` into `Bicycle` ad both types respond to them.
+
+```ruby
+class Bicycle
+  attr_reader :size, :chain, :tire_size
+
+  def initialize(**opts)
+    @size = opts[:size]
+    @chain = opts[:chain]
+    @tire_size = opts[:tire_size]
+  end
+  # ...
+end
+```
+
+#### 6.4.4. Using the Template Method Pattern
+
+This change adds the `default_chain` and `default_tire_size` methods to `Bicycle` for two reasons:
+
+- Wrapping the defaults in methods is a good practice
+- To give subclasses the opportunity to contribute specializations by overriding them
+
+> This technique of defining a basic structure in the superclass and sending messages to acquire subclass-specific contributions is known as the _template method_ pattern.
+
+```ruby
+class Bicycle
+  attr_reader :size, :chain, :tire_size
+
+  def initialize(**opts)
+    @size = opts[:size]
+    @chain = opts[:chain] || default_chain
+    @tire_size = opts[:tire_size] || default_tire_size
+  end
+
+  def default_chain # <- common default
+  "11-speed"
+  end
+  # ...
+end
+
+class RoadBike < Bicycle
+  # ...
+  def default_tire_size # <- subclass default
+    "23"
+  end
+end
+
+class MountainBike < Bicycle
+  # ...
+  def default_tire_size # <- subclass default
+    "2.1" 
+  end
+end
+
+road_bike = RoadBike.new(
+  size: 'M',
+  tape_color: 'red')
+
+puts road_bike.tire_size # => 23
+puts road_bike.chain # => 11-speed
+
+mountain_bike = MountainBike.new(
+  size: 'S',
+  front_shock: 'Manitou',
+  rear_shock: 'Fox')
+
+puts mountain_bike.tire_size # => 2.1
+puts mountain_bike.chain # => 11-speed
+```
+
+#### 6.4.5. Implementing Every Template Method
+
+`Bicycle`'s `initialize` method sends `default_tire_size`, but `Bicycle` itself doesn't implement it. As `Bicycle` is written, subclasses must implement `default_tire_size`. It's imposing a requirement upon its subclasses that is not obvious from a glance at the code.
+
+
+Any class that uses the template method pattern must supply an implementation for every message it sends, even if the only reasonable implementation in the sending class is raising an error.
+
+```ruby
+class Bicycle
+  # ...
+  def default_tire_size
+    raise NotImplementedError, "#{self.class} should have implemented..."
+  end
+end
+
+bent = RecumbentBike.new(size: "L")
+# => RecumbentBike should have implemented...
+# => .../some_file.rb:15:in `default_tire_size'
+```
+
+> Creating code that fails with reasonable error messages takes minor effort in the present but provides value forever.
+
+### 6.5. Managing Coupling between Superclasses and Subclasses
+
+#### 6.5.1. Understanding Coupling
+
+We've now extracted the common `spares` into `Bicycle` and each of the subclasses implement their specific `spares`.
+
+```ruby
+class Bicycle
+  attr_reader :size, :chain, :tire_size
+
+  def initialize(**opts)
+    @size = opts[:size]
+    @chain = opts[:chain] || default_chain
+    @tire_size = opts[:tire_size] || default_tire_size
+  end
+
+  def spares
+    {tire_size: tire_size,
+     chain: chain}
+  end
+
+  def default_chain
+    "11-speed"
+  end
+
+  def default_tire_size
+    raise NotImplementedError, "#{self.class} should have implemented..."
+  end
+end
+
+class RoadBike < Bicycle
+  attr_reader :tape_color
+
+  def initialize(**opts)
+    @tape_color = opts[:tape_color]
+    super
+  end
+
+  def spares
+    super.merge(tape_color: tape_color)
+  end
+
+  def default_tire_size
+    "23"
+  end
+end
+
+class MountainBike < Bicycle
+  attr_reader :front_shock, :rear_shock
+
+  def initialize(**opts)
+    @front_shock = opts[:front_shock]
+    @rear_shock = opts[:rear_shock]
+    super
+  end
+
+  def spares
+    super.merge(front_shock: front_shock)
+  end
+
+  def default_tire_size
+    "2.1"
+  end
+end
+```
+
+Now both `MountainBike` and `RoadBike` know things about themselves (their spare parts specializations) and things about their superclass (that it implements `spares` to return a hash and that it responds to `initialize`).
+
+> Knowing things about other classes creates dependencies, and dependencies couple objects together.
+
+What happens if you create a new class and forget to call `super` in the `initialize` or `spares` methods?
+
+Subclasses now know how they are supposed to interact with their superclass. They are forced to send `super`, and all the superclasses send `super` in the exact same places.
+
+#### 6.5.2. Decoupling Subclasses Using Hook Messages
+
+Instead of allowing subclasses to know the algorithm and requiring that they send `super`, subclasses can instead send _hook_ messages, ones that exist solely to provide subclasses a place to contribute information by implementing matching methods. This strategy removes knowledge of the algorithm from the subclass and returns control to the superclass.
+ 
+```ruby
+class Bicycle
+  attr_reader :size, :chain, :tire_size
+
+  def initialize(**opts)
+    @size = opts[:size]
+    @chain = opts[:chain] || default_chain
+    @tire_size = opts[:tire_size] || default_tire_size
+
+    post_initialize(opts) # Bicycle both sends
+  end
+
+  def post_initialize(opts)  # and implements this
+  end
+  # ...
+end
+
+class RoadBike < Bicycle
+  attr_reader :tape_color
+
+  def post_initialize(opts)
+    @tape_color = opts[:tape_color]
+  end
+end
+``` 
+
+This change removes the `initialize` method from the subclasses. They no longer control initialization, they contribute specializations to a larger, abstract algorithm. That algorithm is defined in the abstract superclass `Bicycle`, which in turn is responsible for sending `post_initialize`.
+
+
+Subclasses are responsible for what initialization they need but they're no longer responsible for when their initialization occurs. Putting control of the timing in the superclass means the algorithm can change without forcing changes upon the subclasses.
+
+We can do the same for the `spares` method:
+
+```ruby
+class Bicycle
+  # ...
+  def spares
+    {
+      tire_size: tire_size,
+      chain: chain
+    }.merge(local_spares)
+  end
+  
+  # hook for subclasses to override
+  def local_spares
+    {}
+  end
+end
+
+class RoadBike < Bicycle
+  # ...
+  def local_spares
+    { tape_color: tape_color }
+  end
+end
+```
+
+Now, it's simple to create a new subclass as it only needs to implement the template methods.
+
+### 6.6. Summary
+
+Inheritance solves the problem of related types that share a great deal of common behavior but differ across some dimension. It allows you to isolate shared code and implement common algorithms in an abstract classe, while also providing a structure that permits subclasses to contribute specializations.
+
+
+The best way to create an abstract superclass is by pushing code up from concrete subclasses.
+
+
+Identifying the correct abstraction is easiest if you have access to at least three existing concrete classes.
+
+
+Abstract superclasses use the template method pattern to invite inheritors to supply specializations. Hook methods allow subclasses to contribute specializations without knowing the abstract algorithm and without needing to send `super`.
+
+> Well-designed inheritance hierarchies are easy to extend with new subclasses, even for programmers who know very little about the application. This ease of extension is inheritance’s greatest strength.
